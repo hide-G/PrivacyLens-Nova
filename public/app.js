@@ -9,7 +9,7 @@ let base64Image = null;
 let currentResults = null;
 
 // 初期化
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('PrivacyLens Nova initialized');
   
   // i18n初期化
@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Canvas初期化
   initCanvas();
+  
+  // エンドポイント設定を読み込み
+  await config.loadFromAmplify();
+  console.log('Endpoints loaded:', config.endpoints);
   
   // イベントリスナーの設定
   document.getElementById('imageInput').addEventListener('change', handleImageUpload);
@@ -132,7 +136,7 @@ async function detectFaces(service) {
   console.log('Detecting faces with:', service);
   
   if (!base64Image) {
-    showError('画像が選択されていません');
+    showError(t('errorFormat'));
     return;
   }
   
@@ -145,8 +149,10 @@ async function detectFaces(service) {
     // Lambda Function URLへのリクエスト
     const endpoint = config.endpoints[service];
     
-    if (!endpoint || endpoint.includes('YOUR_')) {
-      throw new Error('エンドポイントが設定されていません。設定パネルでLambda Function URLを設定してください。');
+    console.log('Endpoint:', endpoint);
+    
+    if (!endpoint || endpoint.includes('YOUR_') || endpoint === '') {
+      throw new Error(t('errorEndpoint'));
     }
     
     const response = await fetch(endpoint, {
