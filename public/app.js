@@ -43,6 +43,15 @@ async function handleImageUpload(event) {
     <p><strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB</p>
   `;
   
+  // 画像プレビューを表示
+  const previewImage = document.getElementById('previewImage');
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImage.src = e.target.result;
+    previewImage.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  
   // 画像をリサイズしてBase64エンコード
   try {
     const result = await resizeAndEncodeImage(file);
