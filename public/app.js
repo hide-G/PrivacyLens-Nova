@@ -246,36 +246,9 @@ function initModals() {
   devBtn.onclick = () => devModal.style.display = 'block';
   devClose.onclick = () => devModal.style.display = 'none';
   
-  // 設定モーダル
-  const settingsModal = document.getElementById('settingsModal');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const settingsClose = settingsModal.querySelector('.close');
-  
-  settingsBtn.onclick = () => {
-    // 現在の設定を表示
-    document.getElementById('rekognitionEndpoint').value = config.endpoints.rekognition;
-    document.getElementById('novaLiteEndpoint').value = config.endpoints.novaLite;
-    document.getElementById('novaProEndpoint').value = config.endpoints.novaPro;
-    document.getElementById('novaPremierEndpoint').value = config.endpoints.novaPremier;
-    settingsModal.style.display = 'block';
-  };
-  settingsClose.onclick = () => settingsModal.style.display = 'none';
-  
-  // 設定保存
-  document.getElementById('saveSettingsBtn').onclick = () => {
-    config.endpoints.rekognition = document.getElementById('rekognitionEndpoint').value;
-    config.endpoints.novaLite = document.getElementById('novaLiteEndpoint').value;
-    config.endpoints.novaPro = document.getElementById('novaProEndpoint').value;
-    config.endpoints.novaPremier = document.getElementById('novaPremierEndpoint').value;
-    config.saveToStorage();
-    alert('設定を保存しました');
-    settingsModal.style.display = 'none';
-  };
-  
   // モーダル外クリックで閉じる
   window.onclick = (event) => {
     if (event.target === devModal) devModal.style.display = 'none';
-    if (event.target === settingsModal) settingsModal.style.display = 'none';
   };
   
   // ダウンロードボタン

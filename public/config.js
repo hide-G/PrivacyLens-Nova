@@ -1,32 +1,43 @@
 // Lambda Function URL設定
-// デプロイ後に実際のURLに更新してください
+// Amplify outputsから自動取得
 
 export const config = {
   endpoints: {
-    rekognition: 'https://YOUR_REKOGNITION_FUNCTION_URL',
-    novaLite: 'https://YOUR_NOVA_LITE_FUNCTION_URL',
-    novaPro: 'https://YOUR_NOVA_PRO_FUNCTION_URL',
-    novaPremier: 'https://YOUR_NOVA_PREMIER_FUNCTION_URL'
+    rekognition: '',
+    novaLite: '',
+    novaPro: '',
+    novaPremier: ''
   },
   
-  // LocalStorageから設定を読み込む
-  loadFromStorage() {
-    const saved = localStorage.getItem('lambdaEndpoints');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        Object.assign(this.endpoints, parsed);
-      } catch (e) {
-        console.error('設定の読み込みエラー:', e);
+  // Amplify outputsから設定を読み込む
+  async loadFromAmplify() {
+    try {
+      // Amplify outputsファイルを読み込み
+      const response = await fetch('/amplify_outputs.json');
+      if (response.ok) {
+        const outputs = await response.json();
+        
+        // Lambda Function URLを取得
+        if (outputs.custom?.rekognitionFunctionUrl) {
+          this.endpoints.rekognition = outputs.custom.rekognitionFunctionUrl;
+        }
+        if (outputs.custom?.novaLiteFunctionUrl) {
+          this.endpoints.novaLite = outputs.custom.novaLiteFunctionUrl;
+        }
+        if (outputs.custom?.novaProFunctionUrl) {
+          this.endpoints.novaPro = outputs.custom.novaProFunctionUrl;
+        }
+        if (outputs.custom?.novaPremierFunctionUrl) {
+          this.endpoints.novaPremier = outputs.custom.novaPremierFunctionUrl;
+        }
+        
+        console.log('Amplify outputs loaded:', this.endpoints);
       }
+    } catch (e) {
+      console.warn('Amplify outputsの読み込みに失敗しました:', e);
     }
-  },
-  
-  // LocalStorageに設定を保存
-  saveToStorage() {
-    localStorage.setItem('lambdaEndpoints', JSON.stringify(this.endpoints));
   }
 };
 
 // 初期化時に設定を読み込む
-config.loadFromStorage();
+config.loadFromAmplify();
