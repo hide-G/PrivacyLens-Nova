@@ -1,0 +1,26 @@
+{
+  "name": "privacylens-nova",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "ampx sandbox",
+    "deploy": "ampx deploy --branch main",
+    "install-functions": "cd amplify/functions/rekognition-detect-faces && npm install && cd ../nova-lite-detect-faces && npm install && cd ../nova-pro-detect-faces && npm install && cd ../nova-premier-detect-faces && npm install && cd ../../.."
+  },
+  "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.700.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.700.0",
+    "@aws-sdk/client-dynamodb": "^3.700.0",
+    "@aws-sdk/lib-dynamodb": "^3.700.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.0.0",
+    "@aws-amplify/backend-cli": "^1.0.0",
+    "aws-cdk-lib": "^2.150.0",
+    "constructs": "^10.3.0",
+    "typescript": "^5.3.0"
+  },
+  "description": "PrivacyLens Nova - 顔マスクWebアプリケーション（Amazon Nova物体検出活用）",
+  "author": "",
+  "license": "MIT"
+}

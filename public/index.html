@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrivacyLens Nova</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 data-i18n="appTitle">PrivacyLens Nova</h1>
+        <div class="header-controls">
+            <button id="languageToggle" class="btn-secondary">日本語</button>
+            <button id="developerInfo" class="btn-secondary" data-i18n="developerInfo">Developer</button>
+            <button id="settingsBtn" class="btn-secondary" data-i18n="settings">Settings</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="uploadSection">
+            <h2 data-i18n="uploadTitle">Upload Image</h2>
+            <input type="file" id="imageInput" accept="image/*,capture=camera">
+            <div id="fileInfo"></div>
+        </section>
+
+        <section id="serviceSection">
+            <h2 data-i18n="selectService">Select Detection Service</h2>
+            <div class="service-buttons">
+                <button id="rekognitionBtn" class="btn-primary" disabled data-i18n="rekognition">Rekognition</button>
+                <button id="novaLiteBtn" class="btn-primary" disabled data-i18n="novaLite">Nova Lite v2</button>
+                <button id="novaProBtn" class="btn-primary" disabled data-i18n="novaPro">Nova Pro v1</button>
+                <button id="novaPremierBtn" class="btn-primary" disabled data-i18n="novaPremier">Nova Premier v1</button>
+            </div>
+        </section>
+
+        <section id="resultsSection" style="display: none;">
+            <h2 data-i18n="results">Results</h2>
+            <canvas id="resultCanvas"></canvas>
+            <div id="resultInfo"></div>
+            <div class="result-actions">
+                <button id="downloadBtn" class="btn-primary" data-i18n="downloadButton">Download Image</button>
+                <button id="postToXBtn" class="btn-primary" data-i18n="postToX">Post to X</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 開発者情報モーダル -->
+    <div id="developerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 data-i18n="developerInfo">Developer</h2>
+            <p>X: <a href="https://x.com/nagata_aws" target="_blank">@nagata_aws</a></p>
+            <p>Community Builders: <a href="https://aws.amazon.com/developer/community/community-builders/" target="_blank">AWS Community Builders</a></p>
+            <p>10,000 AIdeas Competition: 投票をお願いします！</p>
+        </div>
+    </div>
+
+    <!-- 設定パネル -->
+    <div id="settingsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 data-i18n="settings">Settings</h2>
+            <div class="settings-form">
+                <label>Rekognition Endpoint:</label>
+                <input type="text" id="rekognitionEndpoint" placeholder="https://...">
+                
+                <label>Nova Lite Endpoint:</label>
+                <input type="text" id="novaLiteEndpoint" placeholder="https://...">
+                
+                <label>Nova Pro Endpoint:</label>
+                <input type="text" id="novaProEndpoint" placeholder="https://...">
+                
+                <label>Nova Premier Endpoint:</label>
+                <input type="text" id="novaPremierEndpoint" placeholder="https://...">
+                
+                <button id="saveSettingsBtn" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
