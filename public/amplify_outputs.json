@@ -1,0 +1,11 @@
+{
+  "custom": {
+    "API": {
+      "PrivacyLensFaceDetectionApi": {
+        "endpoint": "https://5naz1rt97b.execute-api.us-east-1.amazonaws.com/prod/",
+        "region": "us-east-1",
+        "apiName": "PrivacyLensFaceDetectionApi"
+      }
+    }
+  }
+}
