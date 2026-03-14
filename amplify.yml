@@ -4,7 +4,10 @@ backend:
     build:
       commands:
         - npm install
-        - npm run install-functions
+        - cd amplify/functions/rekognition-detect-faces && npm install && cd ../../..
+        - cd amplify/functions/nova-lite-detect-faces && npm install && cd ../../..
+        - cd amplify/functions/nova-pro-detect-faces && npm install && cd ../../..
+        - cd amplify/functions/nova-premier-detect-faces && npm install && cd ../../..
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
