@@ -1,4 +1,4 @@
-// Nova Lite v2顔検出Lambda関数
+// Nova Lite v2 Face Detection Lambda Function
 import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
@@ -10,43 +10,43 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const COUNTER_TABLE_NAME = process.env.COUNTER_TABLE_NAME || 'ProcessedCounter';
 const MODEL_ID = process.env.NOVA_MODEL_ID || 'us.amazon.nova-lite-v1:0';
 
-// Nova Lite料金（1Kトークンあたり）
+// Nova Lite pricing (per 1K tokens)
 const PRICING = {
   input: 0.00006,
   output: 0.00024
 };
 
 export const handler = async (event) => {
-  console.log('Nova Lite Lambda起動');
+  console.log('Nova Lite Lambda started');
   
   try {
-    // リクエストボディの解析
+    // Parse request body
     const body = JSON.parse(event.body);
     const base64Image = body.image;
     
     if (!base64Image) {
-      return errorResponse(400, '画像データが提供されていません');
+      return errorResponse(400, 'Image data not provided');
     }
     
-    // Base64デコード
+    // Base64 decode
     const imageBuffer = Buffer.from(base64Image, 'base64');
     
-    // 画像サイズバリデーション（5MB制限）
+    // Image size validation (5MB limit)
     if (imageBuffer.length > 5 * 1024 * 1024) {
-      return errorResponse(400, '画像サイズが5MBを超えています');
+      return errorResponse(400, 'Image size exceeds 5MB');
     }
     
-    // 画像フォーマット検出
+    // Detect image format
     const format = detectImageFormat(imageBuffer);
-    console.log(`画像フォーマット: ${format}, サイズ: ${imageBuffer.length} bytes`);
+    console.log(`Image format: ${format}, size: ${imageBuffer.length} bytes`);
     
-    // プロンプト
+    // Prompt
     const prompt = `Detect all human faces in this image and return their bounding boxes.
 Output format: JSON array with objects containing xmin, ymin, xmax, ymax coordinates.
 Coordinate system: 0-1000 range where (0,0) is top-left and (1000,1000) is bottom-right.
 Example: [{"xmin":100,"ymin":200,"xmax":300,"ymax":400}]`;
     
-    // Bedrock Converse API呼び出し
+    // Call Bedrock Converse API
     const command = new ConverseCommand({
       modelId: MODEL_ID,
       messages: [
@@ -73,24 +73,24 @@ Example: [{"xmin":100,"ymin":200,"xmax":300,"ymax":400}]`;
     
     const response = await bedrock.send(command);
     const responseText = response.output.message.content[0].text;
-    console.log('Nova応答:', responseText);
+    console.log('Nova response:', responseText);
     
-    // トークン数取得
+    // Get token counts
     const inputTokens = response.usage.inputTokens;
     const outputTokens = response.usage.outputTokens;
     
-    // コスト計算
+    // Calculate cost
     const inputCost = (inputTokens / 1000) * PRICING.input;
     const outputCost = (outputTokens / 1000) * PRICING.output;
     const estimatedCost = inputCost + outputCost;
     
-    console.log(`トークン数 - 入力: ${inputTokens}, 出力: ${outputTokens}, コスト: $${estimatedCost.toFixed(6)}`);
+    console.log(`Tokens - input: ${inputTokens}, output: ${outputTokens}, cost: $${estimatedCost.toFixed(6)}`);
     
-    // JSON解析
+    // Parse JSON response
     const faces = parseNovaResponse(responseText);
-    console.log(`検出された顔の数: ${faces.length}`);
+    console.log(`Detected faces: ${faces.length}`);
     
-    // DynamoDBカウンターのインクリメント
+    // Increment DynamoDB counter
     let processedCount = 0;
     try {
       const updateResult = await docClient.send(new UpdateCommand({
@@ -101,12 +101,12 @@ Example: [{"xmin":100,"ymin":200,"xmax":300,"ymax":400}]`;
         ReturnValues: 'UPDATED'
       }));
       processedCount = updateResult.Attributes?.processed_count || 0;
-      console.log(`処理枚数カウンター更新: ${processedCount}`);
+      console.log(`Processed count updated: ${processedCount}`);
     } catch (dbError) {
-      console.warn('DynamoDBカウンター更新エラー:', dbError);
+      console.warn('DynamoDB counter update error:', dbError);
     }
     
-    // レスポンス返却
+    // Return response
     return successResponse({
       service: 'Amazon Nova Lite v2',
       faces: faces,
@@ -122,8 +122,8 @@ Example: [{"xmin":100,"ymin":200,"xmax":300,"ymax":400}]`;
     });
     
   } catch (error) {
-    console.error('エラー:', error);
-    return errorResponse(500, `内部エラー: ${error.message}`);
+    console.error('Error:', error);
+    return errorResponse(500, `Internal error: ${error.message}`);
   }
 };
 
@@ -146,20 +146,20 @@ function detectImageFormat(buffer) {
     return "webp";
   }
   
-  throw new Error('サポートされていない画像フォーマットです');
+  throw new Error('Unsupported image format');
 }
 
 function parseNovaResponse(responseText) {
-  // JSON配列を抽出
+  // Extract JSON array
   const jsonMatch = responseText.match(/\[[\s\S]*\]/);
   if (!jsonMatch) {
-    console.warn('Nova応答にJSON配列が見つかりません');
+    console.warn('No JSON array found in Nova response');
     return [];
   }
   
   const faces = JSON.parse(jsonMatch[0]);
   
-  // バリデーションとフィルタリング
+  // Validation and filtering
   return faces.filter(face => {
     const isValid = 
       face.xmin >= 0 && face.xmin <= 1000 &&
@@ -172,7 +172,7 @@ function parseNovaResponse(responseText) {
       (face.ymax - face.ymin) >= 10;
     
     if (!isValid) {
-      console.warn('無効な顔をスキップ:', face);
+      console.warn('Skipping invalid face:', face);
     }
     return isValid;
   });

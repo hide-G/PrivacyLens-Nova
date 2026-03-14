@@ -1,4 +1,4 @@
-// Rekognition顔検出Lambda関数
+// Rekognition Face Detection Lambda Function
 import { RekognitionClient, DetectFacesCommand } from "@aws-sdk/client-rekognition";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
@@ -10,26 +10,26 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const COUNTER_TABLE_NAME = process.env.COUNTER_TABLE_NAME || 'ProcessedCounter';
 
 export const handler = async (event) => {
-  console.log('Rekognition Lambda起動');
+  console.log('Rekognition Lambda started');
   
   try {
-    // リクエストボディの解析
+    // Parse request body
     const body = JSON.parse(event.body);
     const base64Image = body.image;
     
     if (!base64Image) {
-      return errorResponse(400, '画像データが提供されていません');
+      return errorResponse(400, 'Image data not provided');
     }
     
-    // Base64デコード
+    // Base64 decode
     const imageBuffer = Buffer.from(base64Image, 'base64');
     
-    // 画像サイズバリデーション（5MB制限）
+    // Image size validation (5MB limit)
     if (imageBuffer.length > 5 * 1024 * 1024) {
-      return errorResponse(400, '画像サイズが5MBを超えています');
+      return errorResponse(400, 'Image size exceeds 5MB');
     }
     
-    console.log(`画像サイズ: ${imageBuffer.length} bytes`);
+    console.log(`画像size: ${imageBuffer.length} bytes`);
     
     // Rekognition DetectFaces API呼び出し
     const command = new DetectFacesCommand({
@@ -38,7 +38,7 @@ export const handler = async (event) => {
     });
     
     const response = await rekognition.send(command);
-    console.log(`検出された顔の数: ${response.FaceDetails.length}`);
+    console.log(`Detected faces: ${response.FaceDetails.length}`);
     
     // 座標正規化（0-999範囲）
     const faces = response.FaceDetails.map(face => {
@@ -52,7 +52,7 @@ export const handler = async (event) => {
       };
     });
     
-    // DynamoDBカウンターのインクリメント
+    // Increment DynamoDB counter
     let processedCount = 0;
     try {
       const updateResult = await docClient.send(new UpdateCommand({
@@ -63,13 +63,13 @@ export const handler = async (event) => {
         ReturnValues: 'UPDATED'
       }));
       processedCount = updateResult.Attributes?.processed_count || 0;
-      console.log(`処理枚数カウンター更新: ${processedCount}`);
+      console.log(`Processed count updated: ${processedCount}`);
     } catch (dbError) {
-      console.warn('DynamoDBカウンター更新エラー:', dbError);
+      console.warn('DynamoDB counter update error:', dbError);
       // カウンター更新失敗は致命的エラーではないので続行
     }
     
-    // レスポンス返却
+    // Return response
     return successResponse({
       service: 'Rekognition DetectFaces',
       faces: faces,
@@ -82,8 +82,8 @@ export const handler = async (event) => {
     });
     
   } catch (error) {
-    console.error('エラー:', error);
-    return errorResponse(500, `内部エラー: ${error.message}`);
+    console.error('Error:', error);
+    return errorResponse(500, `Internal error: ${error.message}`);
   }
 };
 
