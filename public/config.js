@@ -1,5 +1,5 @@
-// API Gateway Endpoint Configuration
-// Automatically loaded from Amplify outputs
+// API Gateway endpoint configuration
+// Loaded from Amplify outputs
 
 export const config = {
   endpoints: {
@@ -18,27 +18,18 @@ export const config = {
         const outputs = await response.json();
         
         // Get API Gateway endpoint
-        if (outputs.custom?.API?.PrivacyLensFaceDetectionApi?.endpoint) {
-          const baseUrl = outputs.custom.API.PrivacyLensFaceDetectionApi.endpoint;
-          
-          // Set endpoints for each service
-          this.endpoints.rekognition = baseUrl + 'rekognition';
-          this.endpoints.novaLite = baseUrl + 'nova-lite';
-          this.endpoints.novaPro = baseUrl + 'nova-pro';
-          this.endpoints.novaPremier = baseUrl + 'nova-premier';
-          
-          console.log('API Gateway endpoints loaded:', this.endpoints);
-        } else {
-          console.error('API Gateway endpoint not found in amplify_outputs.json');
+        if (outputs.custom?.API?.PrivacyLensFaceDetectionApi) {
+          const apiEndpoint = outputs.custom.API.PrivacyLensFaceDetectionApi.endpoint;
+          this.endpoints.rekognition = apiEndpoint + 'rekognition';
+          this.endpoints.novaLite = apiEndpoint + 'nova-lite';
+          this.endpoints.novaPro = apiEndpoint + 'nova-pro';
+          this.endpoints.novaPremier = apiEndpoint + 'nova-premier';
         }
+        
+        console.log('API Gateway endpoints loaded:', this.endpoints);
       }
     } catch (e) {
-      console.error('Failed to load Amplify outputs:', e);
-    }
-    
-    // Validate endpoints
-    if (!this.endpoints.rekognition) {
-      alert('Endpoint not configured. Lambda Function URL is not set.');
+      console.warn('Failed to load Amplify outputs:', e);
     }
   }
 };
