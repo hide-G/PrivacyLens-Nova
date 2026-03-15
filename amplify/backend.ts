@@ -1,4 +1,4 @@
-﻿// Version: 3.0.0 - Use API Gateway instead of Function URLs
+// Version: 3.0.1 - Force update at 2026-03-16 06:53:42
 import { defineBackend } from '@aws-amplify/backend';
 import { defineFunction } from '@aws-amplify/backend-function';
 import { Stack } from 'aws-cdk-lib';
