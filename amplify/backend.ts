@@ -1,4 +1,4 @@
-// Version: 3.2.0 - Cross-Region Inference Profile IAM fix at 2026-03-16 07:22:04
+// Version: 3.3.0 - Fix Cross-Region IAM with correct model ID format at 2026-03-16 07:29:57
 import { defineBackend } from '@aws-amplify/backend';
 import { defineFunction } from '@aws-amplify/backend-function';
 import { Stack } from 'aws-cdk-lib';
@@ -85,9 +85,9 @@ backend.novaLiteFunction.resources.lambda.addToRolePolicy(
   new iam.PolicyStatement({
     actions: ['bedrock:InvokeModel'],
     resources: [
-      'arn:aws:bedrock:us-east-1::foundation-model/us.amazon.nova-lite-v1:0',
-      'arn:aws:bedrock:us-east-2::foundation-model/us.amazon.nova-lite-v1:0',
-      'arn:aws:bedrock:us-west-2::foundation-model/us.amazon.nova-lite-v1:0',
+      'arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0',
+      'arn:aws:bedrock:us-east-2::foundation-model/amazon.nova-lite-v1:0',
+      'arn:aws:bedrock:us-west-2::foundation-model/amazon.nova-lite-v1:0',
       'arn:aws:bedrock:*:285336573977:inference-profile/us.amazon.nova-lite-v1:0'
     ]
   })
@@ -107,9 +107,9 @@ backend.novaPremierFunction.resources.lambda.addToRolePolicy(
   new iam.PolicyStatement({
     actions: ['bedrock:InvokeModel'],
     resources: [
-      'arn:aws:bedrock:us-east-1::foundation-model/us.amazon.nova-premier-v1:0',
-      'arn:aws:bedrock:us-east-2::foundation-model/us.amazon.nova-premier-v1:0',
-      'arn:aws:bedrock:us-west-2::foundation-model/us.amazon.nova-premier-v1:0',
+      'arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-premier-v1:0',
+      'arn:aws:bedrock:us-east-2::foundation-model/amazon.nova-premier-v1:0',
+      'arn:aws:bedrock:us-west-2::foundation-model/amazon.nova-premier-v1:0',
       'arn:aws:bedrock:*:285336573977:inference-profile/us.amazon.nova-premier-v1:0'
     ]
   })
