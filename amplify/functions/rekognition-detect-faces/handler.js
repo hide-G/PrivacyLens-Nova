@@ -60,7 +60,7 @@ export const handler = async (event) => {
         Key: { pk: 'global' },
         UpdateExpression: 'ADD processed_count :inc',
         ExpressionAttributeValues: { ':inc': 1 },
-        ReturnValues: 'UPDATED'
+        ReturnValues: 'UPDATED_NEW'
       }));
       processedCount = updateResult.Attributes?.processed_count || 0;
       console.log(`Processed count updated: ${processedCount}`);

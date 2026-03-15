@@ -99,7 +99,7 @@ Example: [{"xmin":100,"ymin":200,"xmax":300,"ymax":400}]`;
         Key: { pk: 'global' },
         UpdateExpression: 'ADD processed_count :inc',
         ExpressionAttributeValues: { ':inc': 1 },
-        ReturnValues: 'UPDATED'
+        ReturnValues: 'UPDATED_NEW'
       }));
       processedCount = updateResult.Attributes?.processed_count || 0;
       console.log(`Processed count updated: ${processedCount}`);
