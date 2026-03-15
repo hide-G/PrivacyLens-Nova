@@ -1,0 +1,49 @@
+name: Deploy Amplify Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'amplify/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Deploy backend
+        env:
+          CI: 1
+        run: |
+          npx ampx pipeline-deploy --branch main --app-id d25izynbipns16
+      
+      - name: Trigger frontend build
+        if: success()
+        run: |
+          curl -X POST -d {} \
+            "${{ secrets.AMPLIFY_WEBHOOK_URL }}" \
+            -H "Content-Type:application/json"
