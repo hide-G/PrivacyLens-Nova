@@ -48,7 +48,7 @@ const novaPremierFunction = defineFunction({
   memoryMB: 1024,
   environment: {
     COUNTER_TABLE_NAME: 'ProcessedCounter',
-    NOVA_MODEL_ID: 'amazon.nova-premier-v1:0'
+    NOVA_MODEL_ID: 'us.amazon.nova-premier-v1:0'
   }
 });
 
@@ -84,21 +84,30 @@ backend.rekognitionFunction.resources.lambda.addToRolePolicy(
 backend.novaLiteFunction.resources.lambda.addToRolePolicy(
   new iam.PolicyStatement({
     actions: ['bedrock:InvokeModel'],
-    resources: ['arn:aws:bedrock:us-east-1::foundation-model/us.amazon.nova-lite-v1:0']
+    resources: [
+      'arn:aws:bedrock:us-east-1::foundation-model/us.amazon.nova-lite-v1:0',
+      'arn:aws:bedrock:us-east-1:285336573977:inference-profile/us.amazon.nova-lite-v1:0'
+    ]
   })
 );
 
 backend.novaProFunction.resources.lambda.addToRolePolicy(
   new iam.PolicyStatement({
     actions: ['bedrock:InvokeModel'],
-    resources: ['arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-pro-v1:0']
+    resources: [
+      'arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-pro-v1:0',
+      'arn:aws:bedrock:us-east-1:285336573977:inference-profile/us.amazon.nova-pro-v1:0'
+    ]
   })
 );
 
 backend.novaPremierFunction.resources.lambda.addToRolePolicy(
   new iam.PolicyStatement({
     actions: ['bedrock:InvokeModel'],
-    resources: ['arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-premier-v1:0']
+    resources: [
+      'arn:aws:bedrock:us-east-1::foundation-model/us.amazon.nova-premier-v1:0',
+      'arn:aws:bedrock:us-east-1:285336573977:inference-profile/us.amazon.nova-premier-v1:0'
+    ]
   })
 );
 

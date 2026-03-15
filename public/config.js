@@ -1,38 +1,32 @@
-// API Gateway endpoint configuration
-// Loaded from Amplify outputs
+// PrivacyLens Nova - API Configuration
+// Auto-generated on 2026-03-16 05:25:04
 
 export const config = {
   endpoints: {
-    rekognition: '',
-    novaLite: '',
-    novaPro: '',
-    novaPremier: ''
+    rekognition: 'https://5naz1rt97b.execute-api.us-east-1.amazonaws.com/prod/rekognition',
+    novaLite: 'https://5naz1rt97b.execute-api.us-east-1.amazonaws.com/prod/nova-lite',
+    novaPro: 'https://5naz1rt97b.execute-api.us-east-1.amazonaws.com/prod/nova-pro',
+    novaPremier: 'https://5naz1rt97b.execute-api.us-east-1.amazonaws.com/prod/nova-premier'
   },
   
-  // Load configuration from Amplify outputs
+  // Load endpoints from Amplify outputs (if available)
   async loadFromAmplify() {
     try {
-      // Load Amplify outputs file
-      const response = await fetch('/amplify_outputs.json');
-      if (response.ok) {
-        const outputs = await response.json();
-        
-        // Get API Gateway endpoint
-        if (outputs.custom?.API?.PrivacyLensFaceDetectionApi) {
-          const apiEndpoint = outputs.custom.API.PrivacyLensFaceDetectionApi.endpoint;
-          this.endpoints.rekognition = apiEndpoint + 'rekognition';
-          this.endpoints.novaLite = apiEndpoint + 'nova-lite';
-          this.endpoints.novaPro = apiEndpoint + 'nova-pro';
-          this.endpoints.novaPremier = apiEndpoint + 'nova-premier';
+      const { Amplify } = await import('aws-amplify');
+      const outputs = Amplify.getConfig();
+      
+      if (outputs?.custom?.API) {
+        const apiConfig = Object.values(outputs.custom.API)[0];
+        if (apiConfig?.endpoint) {
+          const baseUrl = apiConfig.endpoint.replace(/\/$/, '');
+          this.endpoints.rekognition = `${baseUrl}/rekognition`;
+          this.endpoints.novaLite = `${baseUrl}/nova-lite`;
+          this.endpoints.novaPro = `${baseUrl}/nova-pro`;
+          this.endpoints.novaPremier = `${baseUrl}/nova-premier`;
         }
-        
-        console.log('API Gateway endpoints loaded:', this.endpoints);
       }
-    } catch (e) {
-      console.warn('Failed to load Amplify outputs:', e);
+    } catch (error) {
+      console.warn('Failed to load Amplify config, using default endpoints:', error);
     }
   }
 };
-
-// Load configuration on initialization
-config.loadFromAmplify();
