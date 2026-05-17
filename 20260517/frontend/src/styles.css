@@ -768,3 +768,44 @@ body {
   color: var(--color-text-tertiary);
   margin-top: 2px;
 }
+
+
+/* ===== QRコード（PC表示時のみ） ===== */
+.qr-code-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+}
+
+.qr-code-container[hidden] {
+  display: none;
+}
+
+.qr-label {
+  font-size: 0.6rem;
+  color: var(--color-text-tertiary);
+}
+
+/* スマホでは非表示 */
+@media (max-width: 768px) {
+  .qr-code-container {
+    display: none !important;
+  }
+}
+
+/* タッチデバイスでは非表示 */
+@media (hover: none) and (pointer: coarse) {
+  .qr-code-container {
+    display: none !important;
+  }
+}

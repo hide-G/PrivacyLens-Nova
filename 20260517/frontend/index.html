@@ -13,6 +13,12 @@
 <body>
   <div id="app" class="app">
 
+    <!-- ===== QRコード（PC表示時のみ） ===== -->
+    <div id="qr-code" class="qr-code-container" hidden>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://privacylens-nova.com/20260517/" alt="QR Code" width="80" height="80">
+      <span class="qr-label">Scan with phone</span>
+    </div>
+
     <!-- ===== アップロード画面 ===== -->
     <section id="screen-upload" class="screen screen--upload active" aria-label="画像アップロード">
       <header class="screen__header">
