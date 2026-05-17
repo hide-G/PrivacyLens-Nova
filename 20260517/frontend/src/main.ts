@@ -680,14 +680,14 @@ function initApp(): void {
   });
 
   // ===== ダウンロード =====
-  btnDownload.addEventListener('click', () => {
+  btnDownload.addEventListener('click', async () => {
     if (!exportedBlob) {
       showError(t('saveFailed'));
       return;
     }
     try {
       const fname = filename || generateFilename();
-      downloadImage(exportedBlob, fname);
+      await downloadImage(exportedBlob, fname);
       showNotification(t('saved'));
     } catch {
       showError(t('saveFailed'));

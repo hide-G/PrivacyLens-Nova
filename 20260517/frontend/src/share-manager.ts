@@ -28,14 +28,33 @@ export function generateFilename(): string {
 
 /**
  * マスク適用済み画像をPNG形式でデバイスにダウンロードする。
- * EXIFメタデータは含まれない（Canvas toBlob由来のため）。
+ * iOS Safariではdownload属性が制限されるため、モバイルではWeb Share APIを使用する。
  *
  * @param blob - ダウンロードする画像のBlob
  * @param filename - ファイル名（省略時: privacylens-nova-{timestamp}.png）
+ * @returns 保存成功時 true
  */
-export function downloadImage(blob: Blob, filename?: string): void {
+export async function downloadImage(blob: Blob, filename?: string): Promise<boolean> {
   const resolvedFilename = filename ?? `privacylens-nova-${Date.now()}.png`;
 
+  // モバイル判定: iOS Safari等ではWeb Share APIで保存を促す
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile && navigator.share && navigator.canShare) {
+    const file = new File([blob], resolvedFilename, { type: 'image/png' });
+    const shareData = { files: [file] };
+
+    if (navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return true;
+      } catch {
+        // ユーザーがキャンセルした場合はフォールバック
+      }
+    }
+  }
+
+  // PC or Web Share API非対応: 従来のダウンロード方式
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
@@ -45,9 +64,9 @@ export function downloadImage(blob: Blob, filename?: string): void {
   document.body.appendChild(anchor);
   anchor.click();
 
-  // クリーンアップ
   document.body.removeChild(anchor);
   URL.revokeObjectURL(url);
+  return true;
 }
 
 /**
