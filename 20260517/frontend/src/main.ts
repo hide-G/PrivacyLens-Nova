@@ -404,8 +404,10 @@ function initApp(): void {
 
     touchHandler = new TouchHandler(maskCanvas, touchCallbacks);
 
-    // PC用マウスイベント登録
-    setupMouseEvents();
+    // PC用マウスイベント登録（タッチデバイスでは不要）
+    if (!('ontouchstart' in window)) {
+      setupMouseEvents();
+    }
 
     // 画面遷移
     showScreen('edit');
