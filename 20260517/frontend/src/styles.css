@@ -802,10 +802,3 @@ body {
     display: none !important;
   }
 }
-
-/* タッチデバイスでは非表示 */
-@media (hover: none) and (pointer: coarse) {
-  .qr-code-container {
-    display: none !important;
-  }
-}

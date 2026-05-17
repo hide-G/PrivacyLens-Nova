@@ -782,9 +782,9 @@ function initApp(): void {
   // ===== 初期UI更新 =====
   updateLanguageUI();
 
-  // PC判定: タッチ非対応 or 画面幅769px以上ならQRコード表示
+  // PC判定: 画面幅769px以上ならQRコード表示
   const qrCode = document.getElementById('qr-code');
-  if (qrCode && !('ontouchstart' in window) && window.innerWidth > 768) {
+  if (qrCode && window.innerWidth > 768) {
     qrCode.hidden = false;
   }
 }
