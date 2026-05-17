@@ -146,15 +146,12 @@ export class MaskRenderer {
     rect: Rect,
     blurRadius: number
   ): void {
-    // 矩形領域の元画像データを取得
     const { x, y, width, height } = rect;
 
-    // 領域が有効かチェック
     if (width <= 0 || height <= 0) {
       return;
     }
 
-    // キャンバス境界内にクリップ
     const clippedX = Math.max(0, Math.round(x));
     const clippedY = Math.max(0, Math.round(y));
     const clippedWidth = Math.min(
@@ -170,28 +167,34 @@ export class MaskRenderer {
       return;
     }
 
-    // CSS filterを使用してぼかしを適用
-    ctx.save();
+    // ぼかし: 縮小→拡大方式（全ブラウザ互換）
+    // blurRadius に応じて縮小率を決定（大きいほど強いぼかし）
+    const scale = Math.max(1, Math.round(blurRadius / 2));
+    const smallWidth = Math.max(1, Math.round(clippedWidth / scale));
+    const smallHeight = Math.max(1, Math.round(clippedHeight / scale));
 
-    // クリッピング領域を設定
-    ctx.beginPath();
-    ctx.rect(clippedX, clippedY, clippedWidth, clippedHeight);
-    ctx.clip();
+    // 一時キャンバスで縮小描画
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = smallWidth;
+    tempCanvas.height = smallHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return;
 
-    // ぼかしフィルターを適用して元画像を再描画
-    ctx.filter = `blur(${blurRadius}px)`;
+    // 元画像の該当領域を縮小描画
+    tempCtx.imageSmoothingEnabled = true;
+    tempCtx.drawImage(
+      this.canvas!,
+      clippedX, clippedY, clippedWidth, clippedHeight,
+      0, 0, smallWidth, smallHeight
+    );
 
-    if (this.imageElement) {
-      ctx.drawImage(
-        this.imageElement,
-        0,
-        0,
-        this.canvas!.width,
-        this.canvas!.height
-      );
-    }
-
-    ctx.restore();
+    // 縮小した画像を元のサイズに拡大して描画（ぼかし効果）
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(
+      tempCanvas,
+      0, 0, smallWidth, smallHeight,
+      clippedX, clippedY, clippedWidth, clippedHeight
+    );
   }
 
   /**
@@ -357,17 +360,27 @@ export class MaskRenderer {
       }
 
       exportCtx.save();
-      exportCtx.beginPath();
-      exportCtx.rect(clippedX, clippedY, clippedWidth, clippedHeight);
-      exportCtx.clip();
-      exportCtx.filter = `blur(${blurRadius}px)`;
-      exportCtx.drawImage(
-        this.imageElement,
-        0,
-        0,
-        exportCanvas.width,
-        exportCanvas.height
-      );
+      // 縮小→拡大方式でぼかし（iOS Safari互換）
+      const scale = Math.max(1, Math.round(blurRadius / 2));
+      const smallW = Math.max(1, Math.round(clippedWidth / scale));
+      const smallH = Math.max(1, Math.round(clippedHeight / scale));
+      const blurTemp = document.createElement('canvas');
+      blurTemp.width = smallW;
+      blurTemp.height = smallH;
+      const blurTempCtx = blurTemp.getContext('2d');
+      if (blurTempCtx) {
+        blurTempCtx.imageSmoothingEnabled = true;
+        blurTempCtx.drawImage(
+          exportCanvas,
+          clippedX, clippedY, clippedWidth, clippedHeight,
+          0, 0, smallW, smallH
+        );
+        exportCtx.drawImage(
+          blurTemp,
+          0, 0, smallW, smallH,
+          clippedX, clippedY, clippedWidth, clippedHeight
+        );
+      }
       exportCtx.restore();
     }
 
