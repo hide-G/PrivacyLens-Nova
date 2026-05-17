@@ -130,6 +130,32 @@ function updateLanguageUI(): void {
     const label = resizeControls.querySelector('.resize-label');
     if (label) label.textContent = t('resizeLabel');
   }
+
+  // 画面タイトル
+  const editTitle = document.querySelector('#screen-edit .screen__title');
+  if (editTitle) editTitle.textContent = t('editTitle');
+  const shareTitle = document.querySelector('#screen-share .screen__title');
+  if (shareTitle) shareTitle.textContent = t('shareTitle');
+
+  // 保存ボタン（SVGアイコン付き）
+  const btnDownload = document.getElementById('btn-download');
+  if (btnDownload) {
+    const svg = btnDownload.querySelector('svg');
+    const svgHtml = svg ? svg.outerHTML : '';
+    btnDownload.innerHTML = `${svgHtml} ${t('saveImage')}`;
+  }
+
+  // X投稿ボタン（SVGアイコン付き）
+  const btnPostX = document.getElementById('btn-post-x');
+  if (btnPostX) {
+    const svg = btnPostX.querySelector('svg');
+    const svgHtml = svg ? svg.outerHTML : '';
+    btnPostX.innerHTML = `${svgHtml} ${t('postX')}`;
+  }
+
+  // クレジット文
+  const creditEl = document.querySelector('[data-i18n="credit"]');
+  if (creditEl) creditEl.textContent = t('credit');
 }
 
 // ===== DOM要素取得 =====
