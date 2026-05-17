@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PrivacyLens Nova - 顔検出バックエンド
+  Lambda Function URL + Bedrock Nova 2 Lite + DynamoDB
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs20.x
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - production
+      - staging
+    Description: デプロイ環境
+
+Resources:
+  # DynamoDB テーブル: 利用統計
+  UsageTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: PrivacyLensNovaUsage
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: date
+          AttributeType: S
+        - AttributeName: timestampSession
+          AttributeType: S
+      KeySchema:
+        - AttributeName: date
+          KeyType: HASH
+        - AttributeName: timestampSession
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # Lambda 関数: 顔検出API
+  DetectFacesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: privacylens-nova-detect-faces
+      Handler: handler.handler
+      CodeUri: dist/
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          USAGE_TABLE_NAME: !Ref UsageTable
+          MODEL_ID: amazon.nova-lite-v1:0
+          NODE_OPTIONS: --enable-source-maps
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - https://privacylens-nova.com
+          AllowMethods:
+            - POST
+            - OPTIONS
+          AllowHeaders:
+            - Content-Type
+          MaxAge: 86400
+      Policies:
+        - Statement:
+            - Sid: BedrockInvokeModel
+              Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource:
+                - !Sub arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0
+            - Sid: DynamoDBPutItem
+              Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt UsageTable.Arn
+
+Outputs:
+  DetectFacesFunctionUrl:
+    Description: Lambda Function URL（顔検出API）
+    Value: !GetAtt DetectFacesFunctionUrl.FunctionUrl
+
+  UsageTableName:
+    Description: DynamoDB テーブル名
+    Value: !Ref UsageTable
+
+  UsageTableArn:
+    Description: DynamoDB テーブル ARN
+    Value: !GetAtt UsageTable.Arn
+
+  DetectFacesFunctionArn:
+    Description: Lambda 関数 ARN
+    Value: !GetAtt DetectFacesFunction.Arn
+
+  DetectFacesFunctionName:
+    Description: Lambda 関数名
+    Value: !Ref DetectFacesFunction

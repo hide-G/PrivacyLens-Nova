@@ -1,0 +1,27 @@
+{
+  "name": "privacylens-nova-20260517",
+  "version": "1.0.0",
+  "description": "PrivacyLens Nova - SNS投稿時のプライバシー保護顔マスクWebサービス",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:frontend": "esbuild frontend/src/main.ts --bundle --outfile=frontend/dist/main.js --format=esm --target=es2020 --minify",
+    "build:backend": "esbuild backend/src/handler.ts --bundle --outfile=backend/dist/handler.js --platform=node --target=node20 --format=cjs --external:@aws-sdk/*",
+    "build": "npm run build:frontend && npm run build:backend",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "typecheck:frontend": "tsc --noEmit -p tsconfig.frontend.json",
+    "typecheck:backend": "tsc --noEmit -p tsconfig.backend.json"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1048.0",
+    "@aws-sdk/client-dynamodb": "^3.1048.0",
+    "@types/node": "^20.14.0",
+    "esbuild": "^0.21.5",
+    "fast-check": "^3.19.0",
+    "typescript": "^5.4.5",
+    "vitest": "^2.0.5"
+  }
+}

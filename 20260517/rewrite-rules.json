@@ -1,0 +1,62 @@
+{
+  "_comment": "Amplify Hosting リライトルール設定 - PrivacyLens Nova (20260517)",
+  "_description": "このファイルは Amplify Console で設定すべきリライトルールを文書化したものです。Amplify Console > App settings > Rewrites and redirects から手動で追加してください。",
+  "_status": "OPTIONAL",
+  "_reason": "本アプリはシングルページ構成（index.html 1ファイル）で、クライアントサイドルーティング（React Router等）を使用していません。画面遷移はJavaScriptによるDOM操作で行われ、URLは変更されません。そのため、リライトルールがなくても正常に動作します。ただし、将来的にクライアントサイドルーティングを導入する場合や、ブックマーク対応が必要になった場合に備えて、以下のルールを推奨設定として記載します。",
+
+  "rewriteRules": [
+    {
+      "_comment": "SPA対応: /20260517/ 配下のサブパスアクセス時に index.html を返す",
+      "_note": "ファイルが存在しない場合のみ適用される（200リライト）。CSS/JS/画像等の静的ファイルへのアクセスには影響しない。",
+      "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|heic)$)([^.]+$)/>",
+      "target": "/20260517/index.html",
+      "status": "200",
+      "condition": null
+    }
+  ],
+
+  "amplifyConsoleSettings": {
+    "_instructions": "以下の手順で Amplify Console からリライトルールを設定します",
+    "steps": [
+      "1. AWS Amplify Console にログイン",
+      "2. アプリ 'd25izynbipns16' を選択",
+      "3. 左メニューから 'Hosting' > 'Rewrites and redirects' を選択",
+      "4. 'Manage redirects' をクリック",
+      "5. 以下のルールを追加（既存ルールの下に追加すること）"
+    ],
+    "rule": {
+      "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|heic)$)([^.]+$)/>",
+      "target": "/20260517/index.html",
+      "type": "200 (Rewrite)"
+    },
+    "existingRulesWarning": "既存のルート '/' に対するリライトルールがある場合、そのルールは変更しないでください。新しいルールは既存ルールの下に追加してください。"
+  },
+
+  "alternativeSimpleRule": {
+    "_comment": "よりシンプルなルール（/20260517/ 配下のみに限定）",
+    "_note": "上記の正規表現ルールが複雑すぎる場合、以下のシンプルなルールを使用できます。ただし、このルールは /20260517/ 配下の全リクエストに適用されるため、静的ファイルへのアクセスも index.html にリライトされる可能性があります。Amplify Hosting はファイルが存在する場合はそのファイルを返すため、実際には問題になりません。",
+    "source": "/20260517/<*>",
+    "target": "/20260517/index.html",
+    "status": "200",
+    "type": "200 (Rewrite)"
+  },
+
+  "currentAppBehavior": {
+    "routingType": "クライアントサイド画面切り替え（URLは変更されない）",
+    "screens": ["upload", "edit", "share"],
+    "navigationMethod": "JavaScriptによるDOM表示/非表示切り替え",
+    "urlChanges": false,
+    "conclusion": "現在の実装ではリライトルールは必須ではありません。/20260517/index.html に直接アクセスすれば全機能が利用可能です。"
+  },
+
+  "whenToApply": {
+    "required": [
+      "クライアントサイドルーティング（History API pushState）を導入した場合",
+      "/20260517/edit や /20260517/share のようなサブパスURLでブックマーク対応が必要な場合"
+    ],
+    "optional": [
+      "現在の実装（URL変更なしの画面切り替え）のまま運用する場合",
+      "防御的に設定しておきたい場合（将来の変更に備える）"
+    ]
+  }
+}

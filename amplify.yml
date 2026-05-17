@@ -14,9 +14,15 @@ frontend:
     preBuild:
       commands:
         - npm install
+        - cd 20260517 && npm install && cd ..
     build:
       commands:
         - echo "Building frontend..."
+        - cd 20260517 && npm run build:frontend && cd ..
+        - mkdir -p public/20260517/src public/20260517/dist
+        - cp 20260517/frontend/index.html public/20260517/index.html
+        - cp 20260517/frontend/src/styles.css public/20260517/src/styles.css
+        - cp 20260517/frontend/dist/main.js public/20260517/dist/main.js
   artifacts:
     baseDirectory: public
     files:
@@ -24,3 +30,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+      - 20260517/node_modules/**/*
