@@ -15,9 +15,9 @@ import { Mask, BlurLevel, Rect } from './types';
 
 /** ぼかし強度とピクセル値のマッピング */
 const BLUR_LEVELS: Record<BlurLevel, number> = {
-  low: 4,
-  medium: 10,
-  high: 20,
+  low: 10,
+  medium: 20,
+  high: 40,
 };
 
 /**
@@ -169,7 +169,7 @@ export class MaskRenderer {
 
     // ぼかし: 縮小→拡大方式（全ブラウザ互換）
     // blurRadius に応じて縮小率を決定（大きいほど強いぼかし）
-    const scale = Math.max(1, Math.round(blurRadius / 2));
+    const scale = Math.max(2, blurRadius);
     const smallWidth = Math.max(1, Math.round(clippedWidth / scale));
     const smallHeight = Math.max(1, Math.round(clippedHeight / scale));
 
@@ -361,7 +361,7 @@ export class MaskRenderer {
 
       exportCtx.save();
       // 縮小→拡大方式でぼかし（iOS Safari互換）
-      const scale = Math.max(1, Math.round(blurRadius / 2));
+      const scale = Math.max(2, blurRadius);
       const smallW = Math.max(1, Math.round(clippedWidth / scale));
       const smallH = Math.max(1, Math.round(clippedHeight / scale));
       const blurTemp = document.createElement('canvas');
