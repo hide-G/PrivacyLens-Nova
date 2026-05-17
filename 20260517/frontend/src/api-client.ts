@@ -36,8 +36,8 @@ export interface DetectFacesResult {
   retryAfter?: number;
 }
 
-/** タイムアウト時間（ミリ秒） */
-const TIMEOUT_MS = 10000;
+/** タイムアウト時間（ミリ秒）- モバイルの大きな画像アップロードを考慮して30秒 */
+const TIMEOUT_MS = 30000;
 
 /**
  * APIクライアントクラス
